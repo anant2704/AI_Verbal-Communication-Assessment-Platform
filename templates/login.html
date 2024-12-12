@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - AI Verbal Communication Assessment Platform</title>
+    <title>AI Verbal Communication Assessment Platform</title>
     <style>
         /* Base styles */
         * {
@@ -20,7 +20,7 @@
             height: 100vh;
             color: #f0f0f0;
         }
-        .register-container {
+        .container {
             background-color: #333333;
             padding: 40px;
             border-radius: 10px;
@@ -29,19 +29,19 @@
             max-width: 400px;
             text-align: center;
         }
-        .register-container h1 {
+        .container h1 {
             margin-bottom: 20px;
             font-size: 2.5em;
             font-weight: bold;
             color: #ffffff;
         }
-        #register-form {
+        form {
             display: flex;
             flex-direction: column;
             gap: 15px;
             margin-top: 20px;
         }
-        #register-form input {
+        input {
             padding: 12px;
             font-size: 1em;
             border: none;
@@ -50,10 +50,10 @@
             background-color: #444444;
             color: #f0f0f0;
         }
-        #register-form input::placeholder {
+        input::placeholder {
             color: #b0b0b0;
         }
-        #register-form button {
+        button {
             background-color: #4CAF50;
             color: white;
             padding: 12px;
@@ -64,30 +64,122 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-        #register-form button:hover {
+        button:hover {
             background-color: #45a049;
+        }
+        .error {
+            color: #f44336;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .switch {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #aaa;
+        }
+        .switch a {
+            color: #4CAF50;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <div class="register-container">
+
+    <!-- Registration Page -->
+    <div id="register-container" class="container">
         <h1>Create Account</h1>
         <form id="register-form" onsubmit="handleRegister(event)">
-            <input type="text" name="name" placeholder="Enter your name" required>
-            <input type="email" name="email" placeholder="Enter your email" required>
-            <input type="password" name="password" placeholder="Enter your password" required>
-            <input type="password" name="confirmPassword" placeholder="Confirm your password" required>
-            <button onclick="window.location.href='/home'">Register</button>
+            <input type="text" id="register-name" name="name" placeholder="Enter your name" required>
+            <input type="email" id="register-email" name="email" placeholder="Enter your email" required>
+            <input type="password" id="register-password" name="password" placeholder="Enter your password" required>
+            <input type="password" id="register-confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+            <button type="submit">Register</button>
+            <div id="register-error-message" class="error"></div>
+            <div class="switch">Already have an account? <a href="javascript:void(0);" onclick="showLogin()">Login</a></div>
+        </form>
+    </div>
+
+    <!-- Login Page -->
+    <div id="login-container" class="container" style="display: none;">
+        <h1>Login</h1>
+        <form id="login-form" onsubmit="handleLogin(event)">
+            <input type="email" id="login-email" name="email" placeholder="Enter your email" required>
+            <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+            <button type="submit">Login</button>
+            <div id="login-error-message" class="error"></div>
+            <div class="switch">Don't have an account? <a href="javascript:void(0);" onclick="showRegister()">Register</a></div>
         </form>
     </div>
 
     <script>
-        // Optional: Add JavaScript functionality for form submission, validation, etc.
+        // Function to handle Registration
         function handleRegister(event) {
             event.preventDefault();
-            // Here you can handle the registration logic (e.g., form validation, sending data to a server)
-            console.log('Form Submitted');
+            
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirmPassword').value;
+            const errorMessageElement = document.getElementById('register-error-message');
+            
+            errorMessageElement.textContent = ''; // Clear previous errors
+
+            // Validation: check if fields are empty
+            if (!name || !email || !password || !confirmPassword) {
+                errorMessageElement.textContent = 'All fields are required.';
+                return;
+            }
+
+            // Validation: check if passwords match
+            if (password !== confirmPassword) {
+                errorMessageElement.textContent = 'Passwords do not match.';
+                return;
+            }
+
+            // Store user details in localStorage (simulating saving to the database)
+            localStorage.setItem('userDetails', JSON.stringify({ name, email, password }));
+            
+            // Redirect to login page after successful registration
+            alert('Registration successful. Please login.');
+            showLogin();
+        }
+
+        // Function to handle Login
+        function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorMessageElement = document.getElementById('login-error-message');
+
+            errorMessageElement.textContent = ''; // Clear previous errors
+
+            // Retrieve stored user details from localStorage
+            const userDetails = JSON.parse(localStorage.getItem('userDetails'));
+
+            // Validation: check if the email and password match
+            if (!userDetails || userDetails.email !== email || userDetails.password !== password) {
+                errorMessageElement.textContent = 'Invalid email or password.';
+                return;
+            }
+
+            // Successful login
+            alert('Login successful!');
+            window.location.href = '/home'; // Redirect to the homepage after successful login
+        }
+
+        // Function to display the login page and hide the registration page
+        function showLogin() {
+            document.getElementById('register-container').style.display = 'none';
+            document.getElementById('login-container').style.display = 'block';
+        }
+
+        // Function to display the registration page and hide the login page
+        function showRegister() {
+            document.getElementById('register-container').style.display = 'block';
+            document.getElementById('login-container').style.display = 'none';
         }
     </script>
+
 </body>
 </html>
