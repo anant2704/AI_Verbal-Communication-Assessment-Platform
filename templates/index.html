@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech-to-Text with Video Playback</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #acb6e5);
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            width: 90%;
+            max-width: 1200px;
+            height: 85%;
+            background: #ffffff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        .text-box, .webcam-box {
+            width: 50%;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .text-box {
+            background: #f9f9f9;
+        }
+        .webcam-box {
+            background: #eef2f3;
+        }
+        .divider {
+            width: 2px;
+            background-color: #d1d1d1;
+            height: 100%;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            font-size: 16px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: none;
+            outline: none;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        textarea:focus {
+            border-color: #007bff;
+            box-shadow: inset 0 2px 6px rgba(0, 123, 255, 0.3);
+        }
+        video {
+            width: 100%;
+            max-height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        button {
+            margin: 10px 0;
+            padding: 12px 24px;
+            font-size: 16px;
+            color: #ffffff;
+            background: #007bff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+        h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Speech-to-Text Box -->
+        <div class="text-box">
+            <h3 id="question">Question: Can you tell me about a time when you had to solve a difficult problem at work or school? How did you approach it?</h3>
+            <textarea id="transcription" placeholder="Your speech will appear here..." readonly></textarea>
+            <button id="submitBtn">Submit</button>
+        </div>
+
+        <!-- Divider -->
+        <div class="divider"></div>
+
+        <!-- Webcam and Playback Box -->
+        <div class="webcam-box">
+            <video id="video" autoplay playsinline muted></video>
+            <div id="controls">
+                <button id="submit" disabled>Submit</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const transcription = document.getElementById('transcription');
+        const video = document.getElementById('video');
+        const submit = document.getElementById('submit');
+        const submitBtn = document.getElementById('submitBtn');
+        const question = document.getElementById('question');
+        let mediaRecorder;
+        let recordedBlobs = [];
+        let stream;
+        let isCamOn = false;
+        let recognition;
+
+
+        // Updated list of questions
+        const allQuestions = [
+            "Can you tell me about a time when you had to solve a difficult problem at work or school? How did you approach it?",
+            "Describe a situation where you had to work with a team to achieve a goal. What was your role, and how did you contribute to the team’s success?",
+            "What is your opinion on the importance of effective communication in the workplace? Can you share an example of how communication helped you in your professional life?",
+            "Tell me about a time when you had to explain a complex concept to someone who didn’t understand it. How did you make sure they understood?",
+            "What do you think are the most important qualities of a good leader, and why? Could you share an example where you demonstrated these qualities?",
+            "Can you describe your favorite book, movie, or TV show? What is it about, and why do you like it?",
+            "What are your long-term career goals, and how do you plan to achieve them?",
+            "Tell me about a time when you had to handle a difficult or stressful situation. How did you manage it, and what did you learn from the experience?",
+            "What motivates you to do your best in work or school? Can you give an example of a situation where you were highly motivated?",
+            "What do you enjoy most about working with others, and what challenges do you face in teamwork? How do you overcome those challenges?",
+            "How would you explain the concept of time management to someone who struggles with it? Can you share a technique or method that helps you manage your time effectively?",
+            "What do you think is the role of technology in education or the workplace today? Can you share an example of how technology has benefited you in your personal or professional life?"
+        ];
+
+       // Store the last used question in localStorage to minimize repetition
+let lastQuestion = localStorage.getItem('lastQuestion');
+
+// Function to get a random question, avoiding repetition of the last used question
+const getRandomQuestion = () => {
+    let newQuestion;
+    do {
+        const randomIndex = Math.floor(Math.random() * allQuestions.length);
+        newQuestion = allQuestions[randomIndex];
+    } while (newQuestion === lastQuestion && allQuestions.length > 1);
+    localStorage.setItem('lastQuestion', newQuestion);
+    return newQuestion;
+};
+
+// Select a new question and update the UI
+const selectedQuestion = getRandomQuestion();
+question.textContent = `Question: ${selectedQuestion}`;
+
+        // Initialize Speech-to-Text
+        function initSpeechToText() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                recognition = new (window.webkitSpeechRecognition || window.SpeechRecognition)();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+
+                recognition.onresult = (event) => {
+                    const transcript = Array.from(event.results)
+                        .map(result => result[0].transcript)
+                        .join('');
+                    transcription.value = formatTranscript(transcript);
+                };
+
+                recognition.start();
+            } else {
+                alert('Speech-to-Text is not supported in your browser.');
+            }
+        }
+
+        // Format transcript with punctuation
+        function formatTranscript(transcript) {
+            if (!/[.?!]$/.test(transcript)) {
+                transcript += '.';
+            }
+            const commaPatterns = /\b(and|but|so|because|or|however)\b/g;
+            transcript = transcript.replace(commaPatterns, "$1,");
+            return transcript;
+        }
+
+        // Start Speech Recognition on Load
+        window.onload = () => {
+            initSpeechToText();
+            startWebcam();
+        };
+
+        // Webcam Functions
+        const startWebcam = async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                video.srcObject = stream;
+                recordedBlobs = [];
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedBlobs.push(event.data);
+                    }
+                };
+
+                mediaRecorder.start();
+                isCamOn = true;
+                submit.disabled = false;
+            } catch (error) {
+                alert('Error accessing webcam or microphone.');
+            }
+        };
+
+        // Submit Function (updated)
+        submitBtn.onclick = () => {
+            if (recognition) {
+                recognition.stop();
+            }
+
+            if (mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+
+            // Hide the camera controls
+            submit.style.display = 'none';
+
+            setTimeout(() => {
+                // Show the recorded video
+                const superBuffer = new Blob(recordedBlobs, { type: 'video/webm' });
+                const videoURL = window.URL.createObjectURL(superBuffer);
+                video.src = videoURL;
+                video.controls = true;
+                video.autoplay = false;
+
+                // Automatically download the video file
+                //const downloadLink = document.createElement('a');
+                //downloadLink.href = videoURL;
+                //downloadLink.download = 'recorded_video.webm';
+                //downloadLink.click();
+                
+                // Add a Confirm Submit button
+                const confirmButton = document.createElement('button');
+                confirmButton.textContent = 'Confirm Submit';
+                confirmButton.style.marginTop = '10px';
+
+                // Add event listener to Confirm Submit button
+                confirmButton.onclick = async () => {
+                    const transcript = transcription.value.trim();
+
+                    if (!transcript) {
+                        alert('Transcription is empty. Please provide your input.');
+                        return;
+                    }
+
+                    // Create FormData to include video and other data
+                    const formData = new FormData();
+                    const videoBlob = new Blob(recordedBlobs, { type: 'video/webm' });
+                    formData.append('speech_text', transcript);
+                    formData.append('question', selectedQuestion);
+                    //formData.append('video', videoBlob, 'recorded_video.webm');
+
+                    try {
+                        const response = await fetch('/evaluate', {
+                            method: 'POST',
+                            body: formData, // Use FormData to send the video file
+                        });
+
+                        const result = await response.json();
+                        if (response.ok) {
+                            alert("Evaluation Results: \n" + JSON.stringify(result.evaluation, null, 2));
+                        } else {
+                            alert("Error: " + result.error);
+                        }
+                    } catch (error) {
+                        //alert("An error occurred while submitting the transcription and video.");
+                    }
+
+                    // Redirect to feedback.html
+                    window.location.href = '/feedback'; // Ensure this path matches your route
+                };
+
+                   document.getElementById('controls').appendChild(confirmButton);
+                }, 500);
+        };
+    </script>
+</body>
+</html>

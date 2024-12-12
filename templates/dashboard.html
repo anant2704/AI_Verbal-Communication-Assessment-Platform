@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 3em;
+            font-weight: bold;
+            text-shadow: 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .feedback-container {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 1px;
+            box-shadow: 0 10px 5px rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            margin-bottom: 30px;
+        }
+        .feedback-container p {
+            line-height: 1.6;
+        }
+        .feedback-list {
+            margin: 20px 0;
+            list-style-type: none;
+            padding: 0;
+        }
+        .feedback-list li {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .feedback-list a {
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .feedback-list a:hover {
+            text-decoration: underline;
+        }
+        button {
+            display: block;
+            width: 150px;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Feedback Dashboard</h1>
+    <div class="feedback-container">
+        <h2>Your Feedbacks</h2>
+        <!-- List of PDFs -->
+        <ul class="feedback-list">
+            {% for feedback in feedback_files %}
+                <li>
+                    <a href="{{ url_for('download_pdf', filename=feedback) }}" target="_blank">{{ feedback }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <button onclick="window.location.href='/home'">Home</button>
+</body>
+</html>

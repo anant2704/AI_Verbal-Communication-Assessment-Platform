@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluation Feedback</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        .feedback-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .feedback-container p {
+            line-height: 1.6;
+        }
+        .feedback-container ul {
+            margin: 10px 0 20px 20px;
+            line-height: 1.6;
+        }
+        button {
+            display: block;
+            width: 150px;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <!-- Include jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <h1>Evaluation Feedback</h1>
+    <div class="feedback-container">
+        <!-- Display the evaluation result -->
+        <div id="evaluation-content">{{ evaluation | safe }}</div>
+    </div>
+
+    <!-- Button for downloading and uploading the PDF -->
+    <button onclick="window.location.href='/home'">Home</button>
+
+    <button onclick="downloadAndSavePDF()">Download PDF and Save</button>
+
+    <script>
+        // Function to download the feedback as a PDF and send it to the backend
+        async function downloadAndSavePDF() {
+            // Get the plain text content (without HTML tags)
+            const evaluationContent = document.getElementById("evaluation-content").innerText;
+
+            // Create a new jsPDF instance
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add title and content to the PDF
+            doc.setFontSize(18);
+            doc.text("Evaluation Feedback", 14, 20);
+            doc.setFontSize(12);
+            
+            // Split the content into lines and add to PDF with proper formatting
+            const contentLines = doc.splitTextToSize(evaluationContent, 180); // Split text into lines within the page width
+            let yPosition = 30; // Starting Y position for the first line
+
+            contentLines.forEach(line => {
+                doc.text(line, 14, yPosition);
+                yPosition += 7; // Move down for each line
+            });
+
+            // Convert the PDF to a Blob (binary data)
+            const pdfBlob = doc.output('blob');
+
+            // Trigger the download (optional)
+            doc.save("evaluation_feedback.pdf");
+
+            // Upload the PDF to the server
+            const formData = new FormData();
+            formData.append("file", pdfBlob, "evaluation_feedback.pdf");
+
+            // Send the PDF file to the backend via a POST request
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            // Handle the server's response (success or error)
+            if (response.ok) {
+                alert('PDF uploaded and saved successfully!');
+            } else {
+                alert('Failed to upload the PDF.');
+            }
+        }
+    </script>
+</body>
+</html>
