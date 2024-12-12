@@ -99,7 +99,6 @@
         <div class="text-box">
             <h3 id="question">Question: Can you tell me about a time when you had to solve a difficult problem at work or school? How did you approach it?</h3>
             <textarea id="transcription" placeholder="Your speech will appear here..." readonly></textarea>
-            <button id="submitBtn">Submit</button>
         </div>
 
         <!-- Divider -->
@@ -117,14 +116,12 @@
         const transcription = document.getElementById('transcription');
         const video = document.getElementById('video');
         const submit = document.getElementById('submit');
-        const submitBtn = document.getElementById('submitBtn');
         const question = document.getElementById('question');
         let mediaRecorder;
         let recordedBlobs = [];
         let stream;
         let isCamOn = false;
         let recognition;
-
 
         // Updated list of questions
         const allQuestions = [
@@ -142,23 +139,23 @@
             "What do you think is the role of technology in education or the workplace today? Can you share an example of how technology has benefited you in your personal or professional life?"
         ];
 
-       // Store the last used question in localStorage to minimize repetition
-let lastQuestion = localStorage.getItem('lastQuestion');
+        // Store the last used question in localStorage to minimize repetition
+        let lastQuestion = localStorage.getItem('lastQuestion');
 
-// Function to get a random question, avoiding repetition of the last used question
-const getRandomQuestion = () => {
-    let newQuestion;
-    do {
-        const randomIndex = Math.floor(Math.random() * allQuestions.length);
-        newQuestion = allQuestions[randomIndex];
-    } while (newQuestion === lastQuestion && allQuestions.length > 1);
-    localStorage.setItem('lastQuestion', newQuestion);
-    return newQuestion;
-};
+        // Function to get a random question, avoiding repetition of the last used question
+        const getRandomQuestion = () => {
+            let newQuestion;
+            do {
+                const randomIndex = Math.floor(Math.random() * allQuestions.length);
+                newQuestion = allQuestions[randomIndex];
+            } while (newQuestion === lastQuestion && allQuestions.length > 1);
+            localStorage.setItem('lastQuestion', newQuestion);
+            return newQuestion;
+        };
 
-// Select a new question and update the UI
-const selectedQuestion = getRandomQuestion();
-question.textContent = `Question: ${selectedQuestion}`;
+        // Select a new question and update the UI
+        const selectedQuestion = getRandomQuestion();
+        question.textContent = `Question: ${selectedQuestion}`;
 
         // Initialize Speech-to-Text
         function initSpeechToText() {
@@ -219,7 +216,7 @@ question.textContent = `Question: ${selectedQuestion}`;
         };
 
         // Submit Function (updated)
-        submitBtn.onclick = () => {
+        submit.onclick = () => {
             if (recognition) {
                 recognition.stop();
             }
@@ -244,12 +241,6 @@ question.textContent = `Question: ${selectedQuestion}`;
                 video.controls = true;
                 video.autoplay = false;
 
-                // Automatically download the video file
-                //const downloadLink = document.createElement('a');
-                //downloadLink.href = videoURL;
-                //downloadLink.download = 'recorded_video.webm';
-                //downloadLink.click();
-                
                 // Add a Confirm Submit button
                 const confirmButton = document.createElement('button');
                 confirmButton.textContent = 'Confirm Submit';
@@ -269,7 +260,6 @@ question.textContent = `Question: ${selectedQuestion}`;
                     const videoBlob = new Blob(recordedBlobs, { type: 'video/webm' });
                     formData.append('speech_text', transcript);
                     formData.append('question', selectedQuestion);
-                    //formData.append('video', videoBlob, 'recorded_video.webm');
 
                     try {
                         const response = await fetch('/evaluate', {
@@ -291,8 +281,8 @@ question.textContent = `Question: ${selectedQuestion}`;
                     window.location.href = '/feedback'; // Ensure this path matches your route
                 };
 
-                   document.getElementById('controls').appendChild(confirmButton);
-                }, 500);
+                document.getElementById('controls').appendChild(confirmButton);
+            }, 500);
         };
     </script>
 </body>
