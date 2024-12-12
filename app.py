@@ -77,8 +77,8 @@ Ensure feedback is varied and fresh with each evaluation. Clear all prior chat h
         completion = client.chat.completions.create(
             model="llama-3.2-3b-preview",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
-            max_tokens=500,
+            temperature=0.5,
+            max_tokens=2000,
             top_p=1,
             stream=False,
             stop=None,
