@@ -66,6 +66,6 @@ Website: [AI Verbal Communication Assessment Platform](https://ai-verbal-communi
 ---
 
 ## Acknowledgments
-- **Llama model 3.2-3b: **: For providing free-tier NLP services.
+- *Llama model 3.2-3b*: For providing free-tier NLP services.
 - *Open-source Speech-to-Text Tools*: Ensuring accurate transcription.
 - *Render.com*: Free hosting for the prototype.
