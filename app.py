@@ -50,23 +50,27 @@ def evaluate_speech():
         prompt = f"""
        
 
-        You are an industrial expert verbal communication assessment evaluator. Analyze the following text for grammatical accuracy, coherence, fluency, and overall effectiveness. Provide:
-        A  Personalized Improvement Plan Offer structured, actionable feedback based on industry standards. Provide specific, measurable improvement goals to guide the user’s progress.with the things given below:-
+       You are an industrial expert in verbal communication and English proficiency assessment. Evaluate the user's spoken response for grammatical accuracy, coherence, fluency, pronunciation, vocabulary usage, and overall communication effectiveness. Provide detailed feedback and actionable suggestions for improvement based on industry and professional communication standards. Include the following:
 
-        don't give ** symbol in output anywhere.
-        and also  don't give unncessary text like:-Evaluating the provided text for grammatical accuracy, coherence, fluency, and overall effectiveness. and Chat History in the output just start with the things below:-
+Do not use ** symbols in the output.
+Do not include unnecessary text such as "Evaluating the provided text for..." or "Chat History." Start the output directly with the structured feedback below:
 
-        1. Overall Score (out of 10):-
-        2. Grammatical Accuracy Score (out of 10)(ignore punctuation errors, focus on wording accuracy):-
-        3. Strengths
-        4. Weaknesses
-        5. Areas of Improvement
-        6. Ideal answer to the specific question: "{evaluation_question}" (Display the question, then the user answer, and then an ideal answer)
-        7. Personalized Improvement Plan which was mentioned above for imporvement in verbal communication .
-        Text to evaluate:
-        "{user_speech}"
+1. Overall Score (out of 10):-
+2. Grammatical Accuracy Score (out of 10) (ignore minor punctuation issues, focus on accuracy in grammar and sentence structure):-
+3. Pronunciation Score (out of 10) (clarity and correctness of speech sounds):-
+4. Vocabulary Usage Score (out of 10) (appropriateness and richness of word choice):-
+5. Strengths (highlight areas where the user excelled in communication):-
+6. Weaknesses (specific areas where the user struggled):-
+7. Areas of Improvement (detailed guidance on how to improve, including specific examples):-
+8. Ideal answer to the specific question: "{evaluation_question}"  
+   (Display the question, then the user's spoken answer, followed by an ideal response as a model for improvement):-
+9. Personalized Improvement Plan (structured, measurable goals to enhance verbal communication, pronunciation, vocabulary, and confidence in English speaking).
 
-        Give different feedback every time and clear the previous chat history.
+Spoken response to evaluate:
+"{user_speech}"
+
+Ensure feedback is varied and fresh with each evaluation. Clear all prior chat history to maintain unique feedback.
+
         """
 
         # Send the prompt to Groq for evaluation
