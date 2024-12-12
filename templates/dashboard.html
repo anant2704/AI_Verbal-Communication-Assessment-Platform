@@ -12,8 +12,8 @@
             font-family: 'Roboto', Arial, sans-serif;
         }
         body {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            color: #fff;
+            background: #1f1f1f;
+            color: #f0f0f0;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -24,19 +24,28 @@
         h1 {
             font-size: 3em;
             font-weight: bold;
+            color: #ffffff;
             text-shadow: 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
         }
         .feedback-container {
             width: 100%;
             max-width: 1200px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 1px;
-            box-shadow: 0 10px 5px rgba(0, 0, 0, 0.3);
-            padding: 15px;
+            background: #333333;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            padding: 30px;
             margin-bottom: 30px;
+        }
+        .feedback-container h2 {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 15px;
         }
         .feedback-container p {
             line-height: 1.6;
+            color: #cccccc;
         }
         .feedback-list {
             margin: 20px 0;
@@ -46,6 +55,7 @@
         .feedback-list li {
             margin: 10px 0;
             font-size: 16px;
+            color: #e0e0e0;
         }
         .feedback-list a {
             text-decoration: none;
@@ -70,13 +80,19 @@
         button:hover {
             background-color: #45a049;
         }
+        footer {
+            width: 100%;
+            text-align: center;
+            margin-top: 30px;
+            color: #cccccc;
+        }
     </style>
 </head>
 <body>
     <h1>Feedback Dashboard</h1>
     <div class="feedback-container">
         <h2>Your Feedbacks</h2>
-        <!-- List of PDFs -->
+        <!-- List of Feedbacks -->
         <ul class="feedback-list">
             {% for feedback in feedback_files %}
                 <li>
@@ -87,5 +103,9 @@
     </div>
 
     <button onclick="window.location.href='/home'">Home</button>
+
+    <footer>
+        <p>&copy; 2024 Feedback Dashboard. All Rights Reserved.</p>
+    </footer>
 </body>
 </html>
