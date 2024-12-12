@@ -143,6 +143,6 @@ def download_pdf(filename):
     return send_from_directory(FEEDBACK_DIR, filename)
 
 # Run the Flask app on the dynamic port
-if _name_ == '_main_':
+if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))  # Use environment variable or default to 10000
     app.run(host='0.0.0.0', port=port, debug=True)
