@@ -80,9 +80,9 @@
     </div>
 
     <!-- Buttons for actions -->
-    <button onclick="downloadAndSavePDF()">Save & Download PDF</button>
     <button onclick="window.location.href='/home'">Home</button>
-    
+    <button onclick="downloadAndSavePDF()">Save & Download PDF</button>
+
     <footer>
         <p>&copy; 2024 Evaluation Feedback. All Rights Reserved.</p>
     </footer>
@@ -106,7 +106,12 @@
             const contentLines = doc.splitTextToSize(evaluationContent, 180); // Split text into lines within the page width
             let yPosition = 30; // Starting Y position for the first line
 
-            contentLines.forEach(line => {
+            // Add content to PDF, handling page overflow
+            contentLines.forEach((line, index) => {
+                if (yPosition > 270) {  // 270 is approximately the bottom of the page
+                    doc.addPage();  // Add a new page if content overflows
+                    yPosition = 20;  // Reset Y position for new page
+                }
                 doc.text(line, 14, yPosition);
                 yPosition += 7; // Move down for each line
             });
