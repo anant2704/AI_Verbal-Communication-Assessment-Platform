@@ -3,109 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feedback Dashboard</title>
+    <title>Dashboard</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Roboto', Arial, sans-serif;
-        }
         body {
-            background: #1f1f1f;
-            color: #f0f0f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-            padding: 20px;
+            background-color: #121212; /* Dark background */
+            color: #ffffff; /* Light text color */
+            font-family: Arial, sans-serif; /* Font style */
+            padding: 30px; /* Padding around the content */
         }
+
         h1 {
-            font-size: 3em;
-            font-weight: bold;
-            color: #ffffff;
-            text-shadow: 2px 4px rgba(0, 0, 0, 0.2);
-            margin-bottom: 20px;
+            text-align: center; /* Center align the heading */
+            margin-bottom: 50px; /* Space below the heading */
         }
-        .feedback-container {
-            width: 100%;
-            max-width: 1200px;
-            background: #333333;
-            border-radius: 10px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-            padding: 30px;
-            margin-bottom: 30px;
+
+        ul {
+            list-style-type: none; /* Remove default list styling */
+            padding: 0; /* Remove padding */
         }
-        .feedback-container h2 {
-            font-size: 2em;
-            font-weight: bold;
-            color: #ffffff;
-            margin-bottom: 15px;
+
+        li {
+            margin: 10px 0; /* Space between list items */
+            display: flex; /* Flexbox for alignment */
+            justify-content: space-between; /* Space between link and button */
+            border-bottom: 1px solid #bbb; 
         }
-        .feedback-container p {
-            line-height: 1.6;
-            color: #cccccc;
+
+        a {
+            color:#45a049; /* Link color */
+            text-decoration: none; /* Remove underline from links */
         }
-        .feedback-list {
-            margin: 20px 0;
-            list-style-type: none;
-            padding: 0;
-        }
-        .feedback-list li {
-            margin: 10px 0;
-            font-size: 16px;
-            color: #e0e0e0;
-        }
-        .feedback-list a {
-            text-decoration: none;
-            color: #4CAF50;
-            font-weight: bold;
-        }
-        .feedback-list a:hover {
-            text-decoration: underline;
-        }
+
         button {
-            display: block;
-            width: 150px;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
+            background-color: #45a049; /* Button background color */
+            color: white; /* Button text color */
+            border: none; /* No border */
+            padding: 10px 10px 10px  ; /* Button padding */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+            margin:2px;
         }
+
         button:hover {
-            background-color: #45a049;
-        }
-        footer {
-            width: 100%;
-            text-align: center;
-            margin-top: 30px;
-            color: #cccccc;
+            background-color:#45a049; /* Darker shade on hover */
         }
     </style>
 </head>
 <body>
-    <h1>Feedback Dashboard</h1>
-    <div class="feedback-container">
-        <h2>Your Feedbacks</h2>
-        <!-- List of Feedbacks -->
-        <ul class="feedback-list">
-            {% for feedback in feedback_files %}
-                <li>
-                    <a href="{{ url_for('download_pdf', filename=feedback) }}" target="_blank">{{ feedback }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <button onclick="window.location.href='/home'">Home</button>
-
-    <footer>
-        <p>&copy; 2024 Feedback Dashboard. All Rights Reserved.</p>
-    </footer>
+    <h1>Dashboard</h1>
+    <h2>Previous Assessments Feedbacks</h2>
+    <ul>
+        {% for link in pdf_links %}
+            <li>
+                <!-- Link to open the PDF in the browser -->
+                <a href="/view/{{ link }}" target="_blank">{{ link }}</a>
+                
+                <!-- Button to download the PDF -->
+                <form action="/download/{{ link }}" method="get">
+                    <button type="submit">Download</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
