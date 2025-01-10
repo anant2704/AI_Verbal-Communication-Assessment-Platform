@@ -37,7 +37,7 @@ Website: [AI Verbal Communication Assessment Platform](https://ai-verbal-communi
 ### Steps
 1. *Clone the Repository*:
    bash
-   git clone https://github.com/anant2704/AI_Verbal-Communication-Assessment-Platform.git
+   git clone [<repo link>](https://github.com/anant2704/AI_Verbal-Communication-Assessment-Platform.git)
    
 2. *Install Backend Dependencies*:
    bash
